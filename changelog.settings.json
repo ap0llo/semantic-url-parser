@@ -1,8 +1,21 @@
 {
+    "$schema": "https://raw.githubusercontent.com/ap0llo/changelog/master/schemas/configuration/schema.json",
     "changelog": {
     
         "integrations": {
             "provider": "GitHub"
-        }
+        },
+
+        "scopes": [
+            {
+                "name": "github",
+                "displayName": "GitHub"
+            },
+            {
+                "name": "gitlab",
+                "displayName": "GitLab"
+            }
+        ]
+
     }
 }
