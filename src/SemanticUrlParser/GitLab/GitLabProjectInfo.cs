@@ -3,6 +3,9 @@ using System.Diagnostics.CodeAnalysis;
 
 namespace Grynwald.SemanticUrlParser.GitLab
 {
+    /// <summary>
+    /// Encapsulates information about a GitLab project.
+    /// </summary>
     public sealed class GitLabProjectInfo : IEquatable<GitLabProjectInfo>
     {
         /// <summary>
@@ -11,17 +14,17 @@ namespace Grynwald.SemanticUrlParser.GitLab
         public string Host { get; }
 
         /// <summary>
-        /// The project namespace (the user or group (incl.subgroups) the project belongs to
+        /// The project namespace (the user or group (incl.subgroups)) the project belongs to
         /// </summary>
         public string Namespace { get; }
 
         /// <summary>
-        /// The project name
+        /// The project name.
         /// </summary>
         public string Project { get; }
 
         /// <summary>
-        /// The GitLab project path (i.e. namespace + repository name).
+        /// The GitLab project path (= namespace + repository name).
         /// </summary>
         public string ProjectPath => $"{Namespace}/{Project}";
 
