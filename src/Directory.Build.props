@@ -48,12 +48,19 @@
 
 	<!--NuGet package properties -->
 	<PropertyGroup>
-		<Authors>TODO</Authors>
-		<PackageProjectUrl>TODO</PackageProjectUrl>
-		<PackageLicenseUrl>TODO</PackageLicenseUrl>
-		<Description>TODO</Description>
-		<Copyright>TODO</Copyright>
-		<PackageTags>TODO</PackageTags>
+		<Authors>Andreas Gruenwald</Authors>
+		<PackageProjectUrl>https://github.com/ap0llo/semantic-url-parser</PackageProjectUrl>
+		<PackageLicenseExpression>MIT</PackageLicenseExpression>
+		<Description>A library to extract information from semantic urls</Description>
+		<Copyright>Copyright (c) 2020, Andreas Gruenwald</Copyright>
+	</PropertyGroup>
+
+
+	<!-- Use NuGet lock file -->
+	<PropertyGroup>
+		<RestorePackagesWithLockFile>true</RestorePackagesWithLockFile>
+		<!-- When running in Azure Pipelines, use locked mode -->
+		<RestoreLockedMode Condition=" '$(TF_BUILD)' == 'true' ">true</RestoreLockedMode>
 	</PropertyGroup>
 
 </Project>

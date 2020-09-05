@@ -1,15 +1,4 @@
-# *__TODO:__ Insert project name*
-
-*This repository serves as template for new repositories.*
-*After creating a new repo from the template, adjust the following files (entries that need to be replaced are marked as **TODO**):*
-
-- *Update the NuGet packaging settings in `src\Directory.Build.props` (Properties marked as **TODO**)*
-- *Adjust settings for CI builds in `azure-pipelines.yml`*
-- *Ensure the .NET Core SDK specified in `global.json` is the version that should be used for the new repo*
-- *Insert year and name into `LICENSE`*
-- *Adjust the version in `version.json`*
-- *Adjust the following sections in this README file*
-- *Remove this section from this README file*
+# Semantic Url Parser
 
 ## Overview
 
@@ -27,11 +16,11 @@
 *__TODO:__ Provide info on how to build the project, e.g.*
 
 ```bat
-  dotnet restore .\src\PROJECTNAME.sln
+  dotnet restore .\src\SemanticUrlParser.sln
 
-  dotnet build .\src\PROJECTNAME.sln
+  dotnet build .\src\SemanticUrlParser.sln
 
-  dotnet pack .\src\PROJECTNAME.sln
+  dotnet pack .\src\SemanticUrlParser.sln
 ```
 
 ## Acknowledgments
@@ -40,10 +29,8 @@
 
 ## Versioning and Branching
 
-*__TODO:__ Adjust versioning section if necessary*
-
 The version of this library is automatically derived from git and the information
-in `version.json` using [Nerdbank.GitVersioning](https://github.com/AArnott/Nerdbank.GitVersioning):
+in `version.json` using [Nerdbank.GitVersioning](https://github.com/dotnet/Nerdbank.GitVersioning):
 
 - The master branch  always contains the latest version. Packages produced from
   master are always marked as pre-release versions (using the `-pre` suffix).
