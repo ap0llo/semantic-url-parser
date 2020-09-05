@@ -3,15 +3,33 @@ using System.Diagnostics.CodeAnalysis;
 
 namespace Grynwald.SemanticUrlParser.GitHub
 {
+    /// <summary>
+    /// Encapsulates information about a GitHub project
+    /// </summary>
     public sealed class GitHubProjectInfo : IEquatable<GitHubProjectInfo>
     {
+        /// <summary>
+        /// The GitHub server's host name (typically <c>github.com</c>, but might be different for GitHub Enterprise installations).
+        /// </summary>
         public string Host { get; }
 
+        /// <summary>
+        /// The owner (user or group) of the repository.
+        /// </summary>
         public string Owner { get; }
 
+        /// <summary>
+        /// The name of the GitHub repository.
+        /// </summary>
         public string Repository { get; }
 
 
+        /// <summary>
+        /// Initializes a new instance of <see cref="GitHubProjectInfo"/>
+        /// </summary>
+        /// <param name="host">The GitHub server's host name (typically <c>github.com</c>, but might be different for GitHub Enterprise installations).</param>
+        /// <param name="owner">The owner (user or group) of the repository.</param>
+        /// <param name="repository">The name of the GitHub repository.</param>
         public GitHubProjectInfo(string host, string owner, string repository)
         {
             if (String.IsNullOrWhiteSpace(host))
@@ -29,6 +47,7 @@ namespace Grynwald.SemanticUrlParser.GitHub
         }
 
 
+        /// <inheritdoc />
         public override int GetHashCode()
         {
             unchecked
@@ -40,8 +59,10 @@ namespace Grynwald.SemanticUrlParser.GitHub
             }
         }
 
+        /// <inheritdoc />
         public override bool Equals(object? obj) => Equals(obj as GitHubProjectInfo);
 
+        /// <inheritdoc />
         public bool Equals([AllowNull] GitHubProjectInfo other)
         {
             return other != null &&
