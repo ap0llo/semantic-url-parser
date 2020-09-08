@@ -15,5 +15,15 @@ namespace Grynwald.SemanticUrlParser
                 : value;
         }
 
+        internal static string RemoveSuffix(this string value, string suffix, StringComparison comparisonType)
+        {
+            return value.EndsWith(suffix, comparisonType)
+#if NETSTANDARD2_0
+                ? value.Substring(0, value.Length - suffix.Length)
+#else
+                ? value[..^suffix.Length]
+#endif
+                : value;
+        }
     }
 }

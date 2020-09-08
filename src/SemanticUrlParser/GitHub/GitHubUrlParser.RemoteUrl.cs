@@ -57,8 +57,15 @@ namespace Grynwald.SemanticUrlParser.GitHub
                 case "http":
                 case "https":
                 case "ssh":
-                    var path = uri.AbsolutePath.Trim('/');
-                    path = path.RemoveSuffix(".git");
+                    var path = Uri.UnescapeDataString(uri.AbsolutePath).Trim('/');
+
+                    if (!path.EndsWith(".git", StringComparison.OrdinalIgnoreCase))
+                    {
+                        errorMessage = $"Cannot parse '{url}' as GitHub url: Expected url to end with '.git'";
+                        return false;
+                    }
+
+                    path = path.RemoveSuffix(".git", StringComparison.OrdinalIgnoreCase);
 
                     var ownerAndRepo = path.Split('/');
                     if (ownerAndRepo.Length != 2)
@@ -67,7 +74,22 @@ namespace Grynwald.SemanticUrlParser.GitHub
                         return false;
                     }
 
-                    projectInfo = new GitHubProjectInfo(uri.Host, ownerAndRepo[0], ownerAndRepo[1]);
+                    var (owner, repo) = ownerAndRepo;
+
+
+                    if (String.IsNullOrWhiteSpace(owner))
+                    {
+                        errorMessage = $"Cannot parse '{url}' as GitHub url: Repository owner cannot be empty or whitespace";
+                        return false;
+                    }
+
+                    if (String.IsNullOrWhiteSpace(repo))
+                    {
+                        errorMessage = $"Cannot parse '{url}' as GitHub url: Repository name cannot be empty or whitespace";
+                        return false;
+                    }
+
+                    projectInfo = new GitHubProjectInfo(uri.Host, owner, repo);
                     return true;
 
                 default:

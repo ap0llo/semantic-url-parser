@@ -1,4 +1,5 @@
-﻿using Xunit;
+﻿using System;
+using Xunit;
 
 namespace Grynwald.SemanticUrlParser.Test.Utilities
 {
@@ -17,6 +18,20 @@ namespace Grynwald.SemanticUrlParser.Test.Utilities
 
             // ACT 
             var actualResult = input.RemoveSuffix(suffix);
+
+            // ASSERT
+            Assert.Equal(expectedResult, actualResult);
+        }
+
+        [Theory]
+        [InlineData("some-string", "-STRING", StringComparison.OrdinalIgnoreCase, "some")]
+        [InlineData("some-string", "-STRING", StringComparison.Ordinal, "some-string")]
+        public void RemoteSuffix_returns_expected_string_and_uses_the_specified_comparison_type(string input, string suffix, StringComparison comparisonType, string expectedResult)
+        {
+            // ARRANGE
+
+            // ACT 
+            var actualResult = input.RemoveSuffix(suffix, comparisonType);
 
             // ASSERT
             Assert.Equal(expectedResult, actualResult);

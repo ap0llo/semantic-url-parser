@@ -9,7 +9,7 @@ namespace Grynwald.SemanticUrlParser.Test.GitHub
     {
         public static IEnumerable<object?[]> NegativeTestCases()
         {
-            object?[] TestCase(string? url)
+            static object?[] TestCase(string? url)
             {
                 return new object?[] { url };
             }
@@ -28,18 +28,35 @@ namespace Grynwald.SemanticUrlParser.Test.GitHub
 
             // unsupported scheme
             yield return TestCase("ftp://github.com/owner/repo.git");
+
+            // empty or whitespace owner
+            yield return TestCase("http://github.com//repo.git");
+            yield return TestCase("http://github.com/ /repo.git");
+
+            // empty or whitespace repository name
+            yield return TestCase("http://github.com/owner/.git");
+            yield return TestCase("http://github.com/owner/ .git");
+
+            // missing ".git" suffix
+            yield return TestCase("http://github.com/owner/repo");
+
         }
 
         public static IEnumerable<object?[]> PositiveTestCases()
         {
-            object?[] TestCase(string url, string host, string owner, string repository)
+            static object?[] TestCase(string url, string host, string owner, string repository)
             {
                 return new object?[] { url, host, owner, repository };
             }
 
             yield return TestCase("http://github.com/owner/repo-name.git", "github.com", "owner", "repo-name");
+            yield return TestCase("http://github.com/owner/repo-name.GIT", "github.com", "owner", "repo-name");
             yield return TestCase("https://github.com/owner/repo-name.git", "github.com", "owner", "repo-name");
+            yield return TestCase("https://github.com/owner/repo-name.GIT", "github.com", "owner", "repo-name");
             yield return TestCase("git@github.com:owner/repo-name.git", "github.com", "owner", "repo-name");
+            yield return TestCase("git@github.com:owner/repo-name.GIT", "github.com", "owner", "repo-name");
+            yield return TestCase("ssh://git@github.com/owner/repo-name.git", "github.com", "owner", "repo-name");
+            yield return TestCase("ssh://git@github.com/owner/repo-name.GIT", "github.com", "owner", "repo-name");
         }
 
 
@@ -74,6 +91,7 @@ namespace Grynwald.SemanticUrlParser.Test.GitHub
         {
             var sut = new GitHubUrlParser();
             Assert.False(sut.TryParseRemoteUrl(url, out var uri));
+            Assert.Null(uri);
         }
 
         [Theory]
