@@ -23,11 +23,17 @@ namespace Grynwald.SemanticUrlParser.Test.GitHub
             // invalid URIs
             yield return TestCase("not-a-url");
 
+            // unsupported scheme
+            yield return TestCase("ftp://github.com/owner/repo.git");
+
             // to many segments in the path
             yield return TestCase("http://github.com/owner/another-name/repo.git");
 
-            // unsupported scheme
-            yield return TestCase("ftp://github.com/owner/repo.git");
+            // empty or whitespace project path
+            yield return TestCase("http://github.com/");
+            yield return TestCase("http://github.com/ ");
+            yield return TestCase("http://github.com/.git");
+            yield return TestCase("http://github.com/ .git");
 
             // empty or whitespace owner
             yield return TestCase("http://github.com//repo.git");
