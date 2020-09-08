@@ -1,8 +1,10 @@
-﻿namespace Grynwald.SemanticUrlParser
+﻿using System;
+
+namespace Grynwald.SemanticUrlParser
 {
-    public static class StringExtensions
+    internal static class StringExtensions
     {
-        public static string RemoveSuffix(this string value, string suffix)
+        internal static string RemoveSuffix(this string value, string suffix)
         {
             return value.EndsWith(suffix)
 #if NETSTANDARD2_0
