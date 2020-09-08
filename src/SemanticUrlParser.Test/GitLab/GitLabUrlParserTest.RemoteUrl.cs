@@ -14,17 +14,40 @@ namespace Grynwald.SemanticUrlParser.Test.GitLab
                 return new object?[] { url };
             }
 
+            // null or whitespace urls
             yield return TestCase(null);
             yield return TestCase("");
             yield return TestCase("\t");
             yield return TestCase("  ");
+
+            // invalid URIs
             yield return TestCase("not-a-url");
-            yield return TestCase("ftp://gitlab.com/user/repo.git");  // unsupported scheme
-            yield return TestCase("http://gitlab.com");               // missing project path
-            yield return TestCase("http://gitlab.com/user/repo");     // missing .git suffix
-            yield return TestCase("http://gitlab.com/user");          // missing project name and .git suffix
-            yield return TestCase("http://gitlab.com/user/.git");     // missing project name
-            yield return TestCase("http://gitlab.com//repo.git");     // missing namespace
+
+            // unsupported scheme
+            yield return TestCase("ftp://gitlab.com/user/repo.git");
+
+            // missing project path
+            yield return TestCase("http://gitlab.com");
+
+            // missing .git suffix
+            yield return TestCase("http://gitlab.com/user/repo");
+
+            // missing project name and .git suffix
+            yield return TestCase("http://gitlab.com/user");
+
+            // empty or whitespace project path
+            yield return TestCase("http://gitlab.com/");
+            yield return TestCase("http://gitlab.com/.git");
+            yield return TestCase("http://gitlab.com/ ");
+            yield return TestCase("http://gitlab.com/ .git");
+
+            // empty or whitespace namespace
+            yield return TestCase("http://gitlab.com//repo.git");
+            yield return TestCase("http://gitlab.com/ /repo.git");
+
+            // empty of whitespace name
+            yield return TestCase("http://gitlab.com/user/.git");
+            yield return TestCase("http://gitlab.com/user/ .git");
         }
 
         public static IEnumerable<object?[]> PositiveTestCases()
@@ -35,15 +58,19 @@ namespace Grynwald.SemanticUrlParser.Test.GitLab
             }
 
             yield return TestCase("https://gitlab.com/user/repoName.git", "gitlab.com", "user", "reponame");
+            yield return TestCase("https://gitlab.com/user/repoName.GIT", "gitlab.com", "user", "reponame");
             yield return TestCase("https://gitlab.com/group/subgroup/repoName.git", "gitlab.com", "group/subgroup", "reponame");
+            yield return TestCase("https://gitlab.com/group/subgroup/repoName.GIT", "gitlab.com", "group/subgroup", "reponame");
             yield return TestCase("https://example.com/user/repoName.git", "example.com", "user", "reponame");
+            yield return TestCase("https://example.com/user/repoName.GIT", "example.com", "user", "reponame");
             yield return TestCase("git@gitlab.com:user/repoName.git", "gitlab.com", "user", "repoName");
+            yield return TestCase("git@gitlab.com:user/repoName.GIT", "gitlab.com", "user", "repoName");
             yield return TestCase("git@gitlab.com:group/subgroup/repoName.git", "gitlab.com", "group/subgroup", "repoName");
+            yield return TestCase("git@gitlab.com:group/subgroup/repoName.GIT", "gitlab.com", "group/subgroup", "repoName");
             yield return TestCase("git@example.com:user/repoName.git", "example.com", "user", "repoName");
+            yield return TestCase("git@example.com:user/repoName.GIT", "example.com", "user", "repoName");
             yield return TestCase("git@example.com:group/subgroup/repoName.git", "example.com", "group/subgroup", "repoName");
-
-
-
+            yield return TestCase("git@example.com:group/subgroup/repoName.GIT", "example.com", "group/subgroup", "repoName");
         }
 
 
