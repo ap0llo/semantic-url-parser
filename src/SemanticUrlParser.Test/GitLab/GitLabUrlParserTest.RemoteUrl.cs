@@ -12,9 +12,12 @@ namespace Grynwald.SemanticUrlParser.Test.GitLab
         [InlineData("\t")]
         [InlineData("  ")]
         [InlineData("not-a-url")]
-        [InlineData("ftp://gitlab.com/owner/repo.git")] // unsupported scheme
+        [InlineData("ftp://gitlab.com/user/repo.git")]  // unsupported scheme
         [InlineData("http://gitlab.com")]               // missing project path
-        [InlineData("http://gitlab.com/user")]          // missing project name
+        [InlineData("http://gitlab.com/user/repo")]     // missing .git suffix
+        [InlineData("http://gitlab.com/user")]          // missing project name and .git suffix
+        [InlineData("http://gitlab.com/user/.git")]     // missing project name
+        [InlineData("http://gitlab.com//repo.git")]     // missing namespace
         public void ParseRemoteUrl_throws_ArgumentException_for_invalid_input(string url)
         {
             var sut = new GitLabUrlParser();
@@ -48,9 +51,12 @@ namespace Grynwald.SemanticUrlParser.Test.GitLab
         [InlineData("\t")]
         [InlineData("  ")]
         [InlineData("not-a-url")]
-        [InlineData("ftp://gitlab.com/owner/repo.git")] // unsupported scheme
+        [InlineData("ftp://gitlab.com/user/repo.git")]  // unsupported scheme
         [InlineData("http://gitlab.com")]               // missing project path
-        [InlineData("http://gitlab.com/user")]          // missing project name
+        [InlineData("http://gitlab.com/user/repo")]     // missing .git suffix
+        [InlineData("http://gitlab.com/user")]          // missing project name and .git suffix
+        [InlineData("http://gitlab.com/user/.git")]     // missing project name
+        [InlineData("http://gitlab.com//repo.git")]     // missing namespace
         public void TryParseRemoteUrl_returns_false_for_invalid_input(string url)
         {
             var sut = new GitLabUrlParser();

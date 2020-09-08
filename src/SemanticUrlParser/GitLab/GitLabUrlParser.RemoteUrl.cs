@@ -59,6 +59,14 @@ namespace Grynwald.SemanticUrlParser.GitLab
                 case "https":
                 case "ssh":
                     var projectPath = uri.AbsolutePath.Trim('/');
+
+                    if (!projectPath.EndsWith(".git"))
+                    {
+                        errorMessage = $"Cannot parse '{url}' as GitLab url: Expected url to end with '.git'";
+                        return false;
+
+                    }
+
                     projectPath = projectPath.RemoveSuffix(".git");
 
                     if (String.IsNullOrWhiteSpace(projectPath))
@@ -74,8 +82,8 @@ namespace Grynwald.SemanticUrlParser.GitLab
                     }
 
                     var splitIndex = projectPath.LastIndexOf('/');
-                    var @namespace = projectPath.Substring(0, splitIndex);
-                    var projectName = projectPath.Substring(splitIndex);
+                    var @namespace = projectPath.Substring(0, splitIndex).Trim('/');
+                    var projectName = projectPath.Substring(splitIndex).Trim('/');
 
                     if (String.IsNullOrWhiteSpace(@namespace))
                     {
