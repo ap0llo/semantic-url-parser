@@ -3,7 +3,7 @@ using System.Diagnostics.CodeAnalysis;
 
 namespace Grynwald.SemanticUrlParser.GitHub
 {
-    public sealed partial class GitHubUrlParser
+    public sealed class GitHubIssueUrlParser : GitHubUrlParser
     {
         public GitHubIssueInfo ParseIssueUrl(string url)
         {

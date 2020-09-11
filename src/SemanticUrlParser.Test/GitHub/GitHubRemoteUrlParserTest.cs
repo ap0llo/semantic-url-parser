@@ -5,7 +5,10 @@ using Xunit;
 
 namespace Grynwald.SemanticUrlParser.Test.GitHub
 {
-    public partial class GitHubUrlParserTest
+    /// <summary>
+    /// Tests for <see cref="GitHubRemoteUrlParser"/>
+    /// </summary>
+    public sealed class GitHubRemoteUrlParserTest
     {
         public static IEnumerable<object?[]> RemoteUrlNegativeTestCases()
         {
@@ -56,10 +59,10 @@ namespace Grynwald.SemanticUrlParser.Test.GitHub
 
         [Theory]
         [MemberData(nameof(RemoteUrlNegativeTestCases))]
-        [MemberData(nameof(CommonNegativeTestCases))]
+        [MemberData(nameof(GitHubUrlParserTest.CommonNegativeTestCases), MemberType = typeof(GitHubUrlParserTest))]
         public void ParseRemoteUrl_throws_ArgumentException_for_invalid_input(string url)
         {
-            var sut = new GitHubUrlParser();
+            var sut = new GitHubRemoteUrlParser();
             Assert.ThrowsAny<ArgumentException>(() => sut.ParseRemoteUrl(url));
         }
 
@@ -68,7 +71,7 @@ namespace Grynwald.SemanticUrlParser.Test.GitHub
         public void ParseRemoteUrl_returns_the_expected_GitHubProjectInfo(string url, string host, string owner, string repository)
         {
             // ARRANGE
-            var sut = new GitHubUrlParser();
+            var sut = new GitHubRemoteUrlParser();
 
             // ACT 
             var projectInfo = sut.ParseRemoteUrl(url);
@@ -82,10 +85,10 @@ namespace Grynwald.SemanticUrlParser.Test.GitHub
 
         [Theory]
         [MemberData(nameof(RemoteUrlNegativeTestCases))]
-        [MemberData(nameof(CommonNegativeTestCases))]
+        [MemberData(nameof(GitHubUrlParserTest.CommonNegativeTestCases), MemberType = typeof(GitHubUrlParserTest))]
         public void TryParseRemoteUrl_returns_false_for_invalid_input(string url)
         {
-            var sut = new GitHubUrlParser();
+            var sut = new GitHubRemoteUrlParser();
             Assert.False(sut.TryParseRemoteUrl(url, out var uri));
             Assert.Null(uri);
         }
@@ -95,7 +98,7 @@ namespace Grynwald.SemanticUrlParser.Test.GitHub
         public void TryParseRemoteUrl_returns_the_expected_GitHubProjectInfo(string url, string host, string owner, string repository)
         {
             // ARRANGE
-            var sut = new GitHubUrlParser();
+            var sut = new GitHubRemoteUrlParser();
 
             // ACT 
             var success = sut.TryParseRemoteUrl(url, out var projectInfo);

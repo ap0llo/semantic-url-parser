@@ -5,7 +5,10 @@ using Xunit;
 
 namespace Grynwald.SemanticUrlParser.Test.GitHub
 {
-    public partial class GitHubUrlParserTest
+    /// <summary>
+    /// Tests for <see cref="GitHubIssueUrlParser"/>
+    /// </summary>
+    public sealed class GitHubIssueUrlParserTest
     {
         public static IEnumerable<object?[]> IssueUrlNegativeTestCases()
         {
@@ -55,10 +58,10 @@ namespace Grynwald.SemanticUrlParser.Test.GitHub
 
         [Theory]
         [MemberData(nameof(IssueUrlNegativeTestCases))]
-        [MemberData(nameof(CommonNegativeTestCases))]
+        [MemberData(nameof(GitHubUrlParserTest.CommonNegativeTestCases), MemberType = typeof(GitHubUrlParserTest))]
         public void ParseIssueUrl_throws_ArgumentException_for_invalid_input(string url)
         {
-            var sut = new GitHubUrlParser();
+            var sut = new GitHubIssueUrlParser();
             Assert.ThrowsAny<ArgumentException>(() => sut.ParseIssueUrl(url));
         }
 
@@ -67,7 +70,7 @@ namespace Grynwald.SemanticUrlParser.Test.GitHub
         public void ParseIssueUrl_returns_the_expected_GitHubIssueInfo(string url, string host, string owner, string repository, int number)
         {
             // ARRANGE
-            var sut = new GitHubUrlParser();
+            var sut = new GitHubIssueUrlParser();
 
             // ACT 
             var issueInfo = sut.ParseIssueUrl(url);
@@ -82,10 +85,10 @@ namespace Grynwald.SemanticUrlParser.Test.GitHub
 
         [Theory]
         [MemberData(nameof(IssueUrlNegativeTestCases))]
-        [MemberData(nameof(CommonNegativeTestCases))]
+        [MemberData(nameof(GitHubUrlParserTest.CommonNegativeTestCases), MemberType = typeof(GitHubUrlParserTest))]
         public void TryParseIssueUrl_returns_false_for_invalid_input(string url)
         {
-            var sut = new GitHubUrlParser();
+            var sut = new GitHubIssueUrlParser();
             Assert.False(sut.TryParseIssueUrl(url, out var uri));
             Assert.Null(uri);
         }
@@ -95,7 +98,7 @@ namespace Grynwald.SemanticUrlParser.Test.GitHub
         public void TryParseIssueUrl_returns_the_expected_GitHubIssueInfo(string url, string host, string owner, string repository, int number)
         {
             // ARRANGE
-            var sut = new GitHubUrlParser();
+            var sut = new GitHubIssueUrlParser();
 
             // ACT 
             var success = sut.TryParseIssueUrl(url, out var issueInfo);

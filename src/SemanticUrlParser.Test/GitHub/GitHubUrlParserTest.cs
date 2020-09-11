@@ -4,9 +4,9 @@ using Grynwald.SemanticUrlParser.GitHub;
 namespace Grynwald.SemanticUrlParser.Test.GitHub
 {
     /// <summary>
-    /// Tests for <see cref="GitHubUrlParser"/>
+    /// Base test class for tests of implementations of <see cref="GitHubUrlParser"/>
     /// </summary>
-    public partial class GitHubUrlParserTest
+    public abstract class GitHubUrlParserTest
     {
         public static IEnumerable<object?[]> CommonNegativeTestCases()
         {
