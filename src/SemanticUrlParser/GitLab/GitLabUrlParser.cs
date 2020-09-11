@@ -3,7 +3,7 @@
     /// <summary>
     /// Parser for GitHub urls.
     /// </summary>
-    public partial class GitLabUrlParser
+    public sealed partial class GitLabUrlParser
     {
     }
 }

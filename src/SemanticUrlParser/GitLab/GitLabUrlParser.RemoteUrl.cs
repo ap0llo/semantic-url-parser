@@ -4,7 +4,7 @@ using Grynwald.SemanticUrlParser.Utilities;
 
 namespace Grynwald.SemanticUrlParser.GitLab
 {
-    public partial class GitLabUrlParser
+    public sealed partial class GitLabUrlParser
     {
         /// <summary>
         /// Parses the specified git remote url.
