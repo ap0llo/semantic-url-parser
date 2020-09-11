@@ -1,98 +1,58 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using Grynwald.SemanticUrlParser.Utilities;
 
 namespace Grynwald.SemanticUrlParser.GitHub
 {
-    public sealed partial class GitHubRemoteUrlParser : GitHubUrlParser
+    /// <summary>
+    /// Parses GitHub git remote URLs and returns a <see cref="GitHubProjectInfo"/>.
+    /// </summary>
+    /// <remarks>
+    /// Supports both HTTP and SSH git urls.
+    /// </remarks>
+    /// <example>
+    /// Get the name of a GitHub project from a SSH url.
+    /// <code language="csharp">
+    /// var parser = new GitHubRemoteUrlParser();
+    /// var projectInfo = parser.ParseUrl("git@github.com:user/my-repo.git");
+    ///
+    /// Console.WriteLine(projectInfo.Owner);       // Prints 'user'
+    /// Console.WriteLine(projectInfo.Repository);  // Prints 'my-repo'
+    /// </code>
+    /// </example>
+    public sealed partial class GitHubRemoteUrlParser : GitHubUrlParser<GitHubProjectInfo>
     {
-        /// <summary>
-        /// Parses the specified git remote url.
-        /// Supports both HTTP and SSH urls.
-        /// </summary>
-        /// <param name="url">The url to parse.</param>
-        /// <returns>Returns a <see cref="GitHubProjectInfo"/> with information about the GitHub project the remote url belongs to.</returns>
-        /// <exception cref="ArgumentException">Thrown if the specified url could not be parsed.</exception>
-        public GitHubProjectInfo ParseRemoteUrl(string url)
+        protected override IEnumerable<string> SupportedSchemes { get; } = new[] { "http", "https", "ssh" };
+
+
+        protected override bool TryCreateUri(string url, [NotNullWhen(true)] out Uri? result) => GitRemoteUrl.TryGetUri(url, out result);
+
+        protected override bool TryParsePath(Uri uri, string path, [NotNullWhen(true)] out GitHubProjectInfo? result, [NotNullWhen(false)] out string? errorMessage)
         {
-            if (TryParseRemoteUrl(url, out var projectInfo, out var errorMessage))
-            {
-                return projectInfo;
-            }
-            else
-            {
-                throw new ArgumentException(errorMessage, nameof(url));
-            }
-        }
+            // expected path: '<owner>/<repo>/.git'
 
-        /// <summary>
-        /// Attempts to parse the specified git remote url.
-        /// Supports both HTTP and SSH urls.
-        /// </summary>
-        /// <param name="url">The url to parse.</param>
-        /// <param name="projectInfo">When successful, contains a <see cref="GitHubProjectInfo"/> with information about the GitHub project the remote url belongs to.</param>
-        /// <returns>Returns <c>true</c> if the specified url could be parsed, otherwise returns <c>false</c>.</returns>
-        public bool TryParseRemoteUrl(string url, [NotNullWhen(true)] out GitHubProjectInfo? projectInfo) => TryParseRemoteUrl(url, out projectInfo, out var _);
-
-
-        private bool TryParseRemoteUrl(string url, [NotNullWhen(true)] out GitHubProjectInfo? projectInfo, [NotNullWhen(false)] out string? errorMessage)
-        {
-            projectInfo = null;
-            errorMessage = null;
-
-            if (String.IsNullOrWhiteSpace(url))
-            {
-                errorMessage = "Value must not be null or empty";
-                return false;
-            }
-
-            if (!GitRemoteUrl.TryGetUri(url, out var uri))
-            {
-                errorMessage = $"Value '{url}' is not a valid uri";
-                return false;
-            }
-
-            if (!CheckScheme(uri, "http", "https", "ssh"))
-            {
-                errorMessage = $"Cannot parse '{url}' as GitHub url: Unsupported scheme '{uri.Scheme}'";
-                return false;
-            }
-
-            var path = Uri.UnescapeDataString(uri.AbsolutePath).Trim('/');
+            result = default;
+            errorMessage = default;
 
             if (!path.EndsWith(".git", StringComparison.OrdinalIgnoreCase))
             {
-                errorMessage = $"Cannot parse '{url}' as GitHub url: Expected url to end with '.git'";
+                errorMessage = $"Expected url to end with '.git'";
                 return false;
             }
 
             path = path.RemoveSuffix(".git", StringComparison.OrdinalIgnoreCase);
 
-            var ownerAndRepo = path.Split('/');
-            if (ownerAndRepo.Length != 2)
+            var pathSegments = path.Split('/');
+            if (pathSegments.Length != 2)
             {
-                errorMessage = $"Cannot parse '{url}' as GitHub url";
+                errorMessage = $"'{uri}' is not a GitHub remote url";
                 return false;
             }
 
-            var (owner, repo) = ownerAndRepo;
+            var (owner, repo) = pathSegments;
 
-
-            if (String.IsNullOrWhiteSpace(owner))
-            {
-                errorMessage = $"Cannot parse '{url}' as GitHub url: Repository owner cannot be empty or whitespace";
-                return false;
-            }
-
-            if (String.IsNullOrWhiteSpace(repo))
-            {
-                errorMessage = $"Cannot parse '{url}' as GitHub url: Repository name cannot be empty or whitespace";
-                return false;
-            }
-
-            projectInfo = new GitHubProjectInfo(uri.Host, owner, repo);
-            return true;
-
+            return TryCreateProjectInfo(uri.Host, owner, repo, out result, out errorMessage);
         }
     }
 }

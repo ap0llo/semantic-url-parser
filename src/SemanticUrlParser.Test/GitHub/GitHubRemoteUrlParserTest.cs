@@ -8,14 +8,20 @@ namespace Grynwald.SemanticUrlParser.Test.GitHub
     /// <summary>
     /// Tests for <see cref="GitHubRemoteUrlParser"/>
     /// </summary>
-    public sealed class GitHubRemoteUrlParserTest
+    public sealed class GitHubRemoteUrlParserTest : GitHubUrlParserTest<GitHubProjectInfo>
     {
+        protected override GitHubUrlParser<GitHubProjectInfo> CreateInstance() => new GitHubRemoteUrlParser();
+
+
         public static IEnumerable<object?[]> RemoteUrlNegativeTestCases()
         {
             static object?[] TestCase(string? url)
             {
                 return new object?[] { url };
             }
+
+            // unsupported scheme
+            yield return TestCase("ftp://github.com/owner/repo.git");
 
             // to many segments in the path
             yield return TestCase("http://github.com/owner/another-name/repo.git");
@@ -59,22 +65,21 @@ namespace Grynwald.SemanticUrlParser.Test.GitHub
 
         [Theory]
         [MemberData(nameof(RemoteUrlNegativeTestCases))]
-        [MemberData(nameof(GitHubUrlParserTest.CommonNegativeTestCases), MemberType = typeof(GitHubUrlParserTest))]
-        public void ParseRemoteUrl_throws_ArgumentException_for_invalid_input(string url)
+        public void ParseUrl_throws_ArgumentException_for_invalid_input(string url)
         {
-            var sut = new GitHubRemoteUrlParser();
-            Assert.ThrowsAny<ArgumentException>(() => sut.ParseRemoteUrl(url));
+            var sut = CreateInstance();
+            Assert.ThrowsAny<ArgumentException>(() => sut.ParseUrl(url));
         }
 
         [Theory]
         [MemberData(nameof(RemoteUrlPositiveTestCases))]
-        public void ParseRemoteUrl_returns_the_expected_GitHubProjectInfo(string url, string host, string owner, string repository)
+        public void ParseUrl_returns_the_expected_GitHubProjectInfo(string url, string host, string owner, string repository)
         {
             // ARRANGE
-            var sut = new GitHubRemoteUrlParser();
+            var sut = CreateInstance();
 
             // ACT 
-            var projectInfo = sut.ParseRemoteUrl(url);
+            var projectInfo = sut.ParseUrl(url);
 
             // ASSERT
             Assert.NotNull(projectInfo);
@@ -85,23 +90,22 @@ namespace Grynwald.SemanticUrlParser.Test.GitHub
 
         [Theory]
         [MemberData(nameof(RemoteUrlNegativeTestCases))]
-        [MemberData(nameof(GitHubUrlParserTest.CommonNegativeTestCases), MemberType = typeof(GitHubUrlParserTest))]
-        public void TryParseRemoteUrl_returns_false_for_invalid_input(string url)
+        public void TryParseUrl_returns_false_for_invalid_input(string url)
         {
-            var sut = new GitHubRemoteUrlParser();
-            Assert.False(sut.TryParseRemoteUrl(url, out var uri));
+            var sut = CreateInstance();
+            Assert.False(sut.TryParseUrl(url, out var uri));
             Assert.Null(uri);
         }
 
         [Theory]
         [MemberData(nameof(RemoteUrlPositiveTestCases))]
-        public void TryParseRemoteUrl_returns_the_expected_GitHubProjectInfo(string url, string host, string owner, string repository)
+        public void TryParseUrl_returns_the_expected_GitHubProjectInfo(string url, string host, string owner, string repository)
         {
             // ARRANGE
-            var sut = new GitHubRemoteUrlParser();
+            var sut = CreateInstance();
 
             // ACT 
-            var success = sut.TryParseRemoteUrl(url, out var projectInfo);
+            var success = sut.TryParseUrl(url, out var projectInfo);
 
             // ASSERT
             Assert.True(success);
@@ -110,5 +114,6 @@ namespace Grynwald.SemanticUrlParser.Test.GitHub
             Assert.Equal(owner, projectInfo.Owner);
             Assert.Equal(repository, projectInfo.Repository);
         }
+
     }
 }

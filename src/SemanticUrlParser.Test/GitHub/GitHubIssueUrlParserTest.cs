@@ -8,14 +8,20 @@ namespace Grynwald.SemanticUrlParser.Test.GitHub
     /// <summary>
     /// Tests for <see cref="GitHubIssueUrlParser"/>
     /// </summary>
-    public sealed class GitHubIssueUrlParserTest
+    public sealed class GitHubIssueUrlParserTest : GitHubUrlParserTest<GitHubIssueInfo>
     {
-        public static IEnumerable<object?[]> IssueUrlNegativeTestCases()
+        protected override GitHubUrlParser<GitHubIssueInfo> CreateInstance() => new GitHubIssueUrlParser();
+
+
+        public static IEnumerable<object?[]> NegativeTestCases()
         {
             static object?[] TestCase(string? url)
             {
                 return new object?[] { url };
             }
+
+            // unsupported scheme
+            yield return TestCase("ftp://github.com/owner/repo.git");
 
             // PR url
             yield return TestCase("https://github.com/owner/repo/pull/123");
@@ -41,7 +47,7 @@ namespace Grynwald.SemanticUrlParser.Test.GitHub
             yield return TestCase("https://github.com/owner/ /issues/1");
         }
 
-        public static IEnumerable<object?[]> IssueUrlPositiveTestCases()
+        public static IEnumerable<object?[]> PositiveTestCases()
         {
             static object?[] TestCase(string url, string host, string owner, string repository, int number)
             {
@@ -57,23 +63,22 @@ namespace Grynwald.SemanticUrlParser.Test.GitHub
 
 
         [Theory]
-        [MemberData(nameof(IssueUrlNegativeTestCases))]
-        [MemberData(nameof(GitHubUrlParserTest.CommonNegativeTestCases), MemberType = typeof(GitHubUrlParserTest))]
-        public void ParseIssueUrl_throws_ArgumentException_for_invalid_input(string url)
+        [MemberData(nameof(NegativeTestCases))]
+        public void ParseUrl_throws_ArgumentException_for_invalid_input(string url)
         {
-            var sut = new GitHubIssueUrlParser();
-            Assert.ThrowsAny<ArgumentException>(() => sut.ParseIssueUrl(url));
+            var sut = CreateInstance();
+            Assert.ThrowsAny<ArgumentException>(() => sut.ParseUrl(url));
         }
 
         [Theory]
-        [MemberData(nameof(IssueUrlPositiveTestCases))]
-        public void ParseIssueUrl_returns_the_expected_GitHubIssueInfo(string url, string host, string owner, string repository, int number)
+        [MemberData(nameof(PositiveTestCases))]
+        public void ParseUrl_returns_the_expected_GitHubIssueInfo(string url, string host, string owner, string repository, int number)
         {
             // ARRANGE
-            var sut = new GitHubIssueUrlParser();
+            var sut = CreateInstance();
 
             // ACT 
-            var issueInfo = sut.ParseIssueUrl(url);
+            var issueInfo = sut.ParseUrl(url);
 
             // ASSERT
             Assert.NotNull(issueInfo);
@@ -84,24 +89,23 @@ namespace Grynwald.SemanticUrlParser.Test.GitHub
         }
 
         [Theory]
-        [MemberData(nameof(IssueUrlNegativeTestCases))]
-        [MemberData(nameof(GitHubUrlParserTest.CommonNegativeTestCases), MemberType = typeof(GitHubUrlParserTest))]
-        public void TryParseIssueUrl_returns_false_for_invalid_input(string url)
+        [MemberData(nameof(NegativeTestCases))]
+        public void TryParseUrl_returns_false_for_invalid_input(string url)
         {
-            var sut = new GitHubIssueUrlParser();
-            Assert.False(sut.TryParseIssueUrl(url, out var uri));
+            var sut = CreateInstance();
+            Assert.False(sut.TryParseUrl(url, out var uri));
             Assert.Null(uri);
         }
 
         [Theory]
-        [MemberData(nameof(IssueUrlPositiveTestCases))]
-        public void TryParseIssueUrl_returns_the_expected_GitHubIssueInfo(string url, string host, string owner, string repository, int number)
+        [MemberData(nameof(PositiveTestCases))]
+        public void TryParseUrl_returns_the_expected_GitHubIssueInfo(string url, string host, string owner, string repository, int number)
         {
             // ARRANGE
-            var sut = new GitHubIssueUrlParser();
+            var sut = CreateInstance();
 
             // ACT 
-            var success = sut.TryParseIssueUrl(url, out var issueInfo);
+            var success = sut.TryParseUrl(url, out var issueInfo);
 
             // ASSERT
             Assert.True(success);

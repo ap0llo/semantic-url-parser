@@ -1,14 +1,16 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using Grynwald.SemanticUrlParser.GitHub;
+using Xunit;
 
 namespace Grynwald.SemanticUrlParser.Test.GitHub
 {
     /// <summary>
     /// Base test class for tests of implementations of <see cref="GitHubUrlParser"/>
     /// </summary>
-    public abstract class GitHubUrlParserTest
+    public abstract class GitHubUrlParserTest<T> where T : class
     {
-        public static IEnumerable<object?[]> CommonNegativeTestCases()
+        public static IEnumerable<object?[]> InvalidUriTestCases()
         {
             static object?[] TestCase(string? url)
             {
@@ -23,9 +25,26 @@ namespace Grynwald.SemanticUrlParser.Test.GitHub
 
             // invalid URIs
             yield return TestCase("not-a-url");
-
-            // unsupported scheme
-            yield return TestCase("ftp://github.com/owner/repo.git");
         }
+
+
+        [Theory]
+        [MemberData(nameof(InvalidUriTestCases))]
+        public void ParseUrl_throws_ArgumentException_for_inputs_that_are_not_valid_uris(string url)
+        {
+            var sut = new GitHubIssueUrlParser();
+            Assert.ThrowsAny<ArgumentException>(() => sut.ParseUrl(url));
+        }
+
+        [Theory]
+        [MemberData(nameof(InvalidUriTestCases))]
+        public void TryParseUrl_returns_false_for_inputs_that_are_not_valid_uris(string url)
+        {
+            var sut = new GitHubIssueUrlParser();
+            Assert.False(sut.TryParseUrl(url, out var uri));
+            Assert.Null(uri);
+        }
+
+        protected abstract GitHubUrlParser<T> CreateInstance();
     }
 }

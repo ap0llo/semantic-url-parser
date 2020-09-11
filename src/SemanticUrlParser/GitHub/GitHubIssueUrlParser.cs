@@ -1,95 +1,84 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 
 namespace Grynwald.SemanticUrlParser.GitHub
 {
-    public sealed class GitHubIssueUrlParser : GitHubUrlParser
+    /// <summary>
+    /// Parses GitHub issue URLs and returns a <see cref="GitHubIssueInfo"/>
+    /// </summary>
+    /// <remarks>
+    /// Gets the host, repository owner, repository name and issue number from a GitHub issue web link
+    /// </remarks>
+    /// <example>
+    /// <code language="csharp">
+    /// var parser = new GitHubRemoteUrlParser();
+    /// var issueInfo = parser.ParseUrl("https://github.com/user/my-repo/issues/42");
+    ///
+    /// Console.WriteLine(issueInfo.Project.Owner);       // Prints 'user'
+    /// Console.WriteLine(issueInfo.Project.Repository);  // Prints 'my-repo'
+    /// Console.WriteLine(issueInfo.Number);              // Prints '42'
+    /// </code>
+    /// </example>
+    public sealed class GitHubIssueUrlParser : GitHubUrlParser<GitHubIssueInfo>
     {
-        public GitHubIssueInfo ParseIssueUrl(string url)
+        protected override IEnumerable<string> SupportedSchemes { get; } = new[] { "http", "https" };
+
+
+        protected override bool TryParsePath(Uri uri, string path, [NotNullWhen(true)] out GitHubIssueInfo? result, [NotNullWhen(false)] out string? errorMessage)
         {
-            if (TryParseIssueUrl(url, out var projectInfo, out var errorMessage))
-            {
-                return projectInfo;
-            }
-            else
-            {
-                throw new ArgumentException(errorMessage, nameof(url));
-            }
-        }
+            // expected path: '<owner>/<repo>/issues/<number>'
 
-        public bool TryParseIssueUrl(string url, [NotNullWhen(true)] out GitHubIssueInfo? issueInfo) =>
-            TryParseIssueUrl(url, out issueInfo, out var _);
+            result = default;
 
-        private bool TryParseIssueUrl(string url, [NotNullWhen(true)] out GitHubIssueInfo? issueInfo, [NotNullWhen(false)] out string? errorMessage)
-        {
-            issueInfo = null;
-            errorMessage = null;
-
-            if (String.IsNullOrWhiteSpace(url))
+            var pathSegments = path.Split('/');
+            if (pathSegments.Length != 4)
             {
-                errorMessage = "Value must not be null or empty";
+                errorMessage = $"'{uri}' is nut a GitHub issue url";
                 return false;
             }
 
-            if (!Uri.TryCreate(url, UriKind.Absolute, out var uri))
+            var (owner, repo, linkType, numberString) = pathSegments;
+
+            if (!TryCreateProjectInfo(uri.Host, owner, repo, out var projectInfo, out errorMessage))
             {
-                errorMessage = $"Value '{url}' is not a valid uri";
-                return false;
-            }
-
-            if (!CheckScheme(uri, "http", "https"))
-            {
-                errorMessage = $"Cannot parse '{url}' as GitHub url: Unsupported scheme '{uri.Scheme}'";
-                return false;
-            }
-
-
-            var path = Uri.UnescapeDataString(uri.AbsolutePath).Trim('/');
-
-            var pathParts = path.Split('/');
-            if (pathParts.Length != 4)
-            {
-                errorMessage = $"Cannot parse '{url}' as GitHub issue url";
-                return false;
-            }
-
-            var (owner, repo, linkType, numberString) = pathParts;
-
-
-            if (String.IsNullOrWhiteSpace(owner))
-            {
-                errorMessage = $"Cannot parse '{url}' as GitHub url: Repository owner cannot be empty or whitespace";
-                return false;
-            }
-
-            if (String.IsNullOrWhiteSpace(repo))
-            {
-                errorMessage = $"Cannot parse '{url}' as GitHub url: Repository name cannot be empty or whitespace";
                 return false;
             }
 
             if (!StringComparer.OrdinalIgnoreCase.Equals("issues", linkType))
             {
-                errorMessage = $"Cannot parse '{url}' as GitHub url: Expected link type to be 'issue' but found '{linkType}'";
+                errorMessage = $"Expected link type to be 'issue' but found '{linkType}'";
                 return false;
             }
 
-            if (!int.TryParse(numberString, out var number))
+            if (!TryParseIssueNumber(numberString, out var issueNumber, out errorMessage))
             {
-                errorMessage = $"Cannot parse '{url}' as GitHub url: '{numberString}' is not a valid issue number";
                 return false;
             }
 
-            if (number <= 0)
-            {
-                errorMessage = $"Cannot parse '{url}' as GitHub url: Issue number must bot be 0 or negative but was '{number}'";
-                return false;
-            }
 
-            issueInfo = new GitHubIssueInfo(new GitHubProjectInfo(uri.Host, owner, repo), number);
+            errorMessage = null;
+            result = new GitHubIssueInfo(projectInfo, issueNumber);
             return true;
         }
 
 
+        private bool TryParseIssueNumber(string input, out int issueNumber, [NotNullWhen(false)] out string? errorMessage)
+        {
+            if (!Int32.TryParse(input, out issueNumber))
+            {
+                errorMessage = $"'{input}' is not a valid issue number";
+                return false;
+            }
+
+            if (issueNumber <= 0)
+            {
+                errorMessage = $"Issue number must bot be 0 or negative but was '{issueNumber}'";
+                return false;
+            }
+
+            errorMessage = null;
+            return true;
+        }
     }
 }
