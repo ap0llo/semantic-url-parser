@@ -35,7 +35,7 @@ namespace Grynwald.SemanticUrlParser.GitHub
         public bool TryParseRemoteUrl(string url, [NotNullWhen(true)] out GitHubProjectInfo? projectInfo) => TryParseRemoteUrl(url, out projectInfo, out var _);
 
 
-        private static bool TryParseRemoteUrl(string url, [NotNullWhen(true)] out GitHubProjectInfo? projectInfo, [NotNullWhen(false)] out string? errorMessage)
+        private bool TryParseRemoteUrl(string url, [NotNullWhen(true)] out GitHubProjectInfo? projectInfo, [NotNullWhen(false)] out string? errorMessage)
         {
             projectInfo = null;
             errorMessage = null;
@@ -52,50 +52,47 @@ namespace Grynwald.SemanticUrlParser.GitHub
                 return false;
             }
 
-            switch (uri.Scheme.ToLower())
+            if (!CheckScheme(uri, "http", "https", "ssh"))
             {
-                case "http":
-                case "https":
-                case "ssh":
-                    var path = Uri.UnescapeDataString(uri.AbsolutePath).Trim('/');
-
-                    if (!path.EndsWith(".git", StringComparison.OrdinalIgnoreCase))
-                    {
-                        errorMessage = $"Cannot parse '{url}' as GitHub url: Expected url to end with '.git'";
-                        return false;
-                    }
-
-                    path = path.RemoveSuffix(".git", StringComparison.OrdinalIgnoreCase);
-
-                    var ownerAndRepo = path.Split('/');
-                    if (ownerAndRepo.Length != 2)
-                    {
-                        errorMessage = $"Cannot parse '{url}' as GitHub url";
-                        return false;
-                    }
-
-                    var (owner, repo) = ownerAndRepo;
-
-
-                    if (String.IsNullOrWhiteSpace(owner))
-                    {
-                        errorMessage = $"Cannot parse '{url}' as GitHub url: Repository owner cannot be empty or whitespace";
-                        return false;
-                    }
-
-                    if (String.IsNullOrWhiteSpace(repo))
-                    {
-                        errorMessage = $"Cannot parse '{url}' as GitHub url: Repository name cannot be empty or whitespace";
-                        return false;
-                    }
-
-                    projectInfo = new GitHubProjectInfo(uri.Host, owner, repo);
-                    return true;
-
-                default:
-                    errorMessage = $"Cannot parse '{url}' as GitHub url: Unsupported scheme '{uri.Scheme}'";
-                    return false;
+                errorMessage = $"Cannot parse '{url}' as GitHub url: Unsupported scheme '{uri.Scheme}'";
+                return false;
             }
+
+            var path = Uri.UnescapeDataString(uri.AbsolutePath).Trim('/');
+
+            if (!path.EndsWith(".git", StringComparison.OrdinalIgnoreCase))
+            {
+                errorMessage = $"Cannot parse '{url}' as GitHub url: Expected url to end with '.git'";
+                return false;
+            }
+
+            path = path.RemoveSuffix(".git", StringComparison.OrdinalIgnoreCase);
+
+            var ownerAndRepo = path.Split('/');
+            if (ownerAndRepo.Length != 2)
+            {
+                errorMessage = $"Cannot parse '{url}' as GitHub url";
+                return false;
+            }
+
+            var (owner, repo) = ownerAndRepo;
+
+
+            if (String.IsNullOrWhiteSpace(owner))
+            {
+                errorMessage = $"Cannot parse '{url}' as GitHub url: Repository owner cannot be empty or whitespace";
+                return false;
+            }
+
+            if (String.IsNullOrWhiteSpace(repo))
+            {
+                errorMessage = $"Cannot parse '{url}' as GitHub url: Repository name cannot be empty or whitespace";
+                return false;
+            }
+
+            projectInfo = new GitHubProjectInfo(uri.Host, owner, repo);
+            return true;
+
         }
     }
 }

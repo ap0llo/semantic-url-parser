@@ -7,24 +7,12 @@ namespace Grynwald.SemanticUrlParser.Test.GitHub
 {
     public partial class GitHubUrlParserTest
     {
-        public static IEnumerable<object?[]> NegativeTestCases()
+        public static IEnumerable<object?[]> RemoteUrlNegativeTestCases()
         {
             static object?[] TestCase(string? url)
             {
                 return new object?[] { url };
             }
-
-            // null or whitespace
-            yield return TestCase(null);
-            yield return TestCase("");
-            yield return TestCase("\t");
-            yield return TestCase("  ");
-
-            // invalid URIs
-            yield return TestCase("not-a-url");
-
-            // unsupported scheme
-            yield return TestCase("ftp://github.com/owner/repo.git");
 
             // to many segments in the path
             yield return TestCase("http://github.com/owner/another-name/repo.git");
@@ -48,7 +36,7 @@ namespace Grynwald.SemanticUrlParser.Test.GitHub
 
         }
 
-        public static IEnumerable<object?[]> PositiveTestCases()
+        public static IEnumerable<object?[]> RemoteUrlPositiveTestCases()
         {
             static object?[] TestCase(string url, string host, string owner, string repository)
             {
@@ -67,7 +55,8 @@ namespace Grynwald.SemanticUrlParser.Test.GitHub
 
 
         [Theory]
-        [MemberData(nameof(NegativeTestCases))]
+        [MemberData(nameof(RemoteUrlNegativeTestCases))]
+        [MemberData(nameof(CommonNegativeTestCases))]
         public void ParseRemoteUrl_throws_ArgumentException_for_invalid_input(string url)
         {
             var sut = new GitHubUrlParser();
@@ -75,7 +64,7 @@ namespace Grynwald.SemanticUrlParser.Test.GitHub
         }
 
         [Theory]
-        [MemberData(nameof(PositiveTestCases))]
+        [MemberData(nameof(RemoteUrlPositiveTestCases))]
         public void ParseRemoteUrl_returns_the_expected_GitHubProjectInfo(string url, string host, string owner, string repository)
         {
             // ARRANGE
@@ -92,7 +81,8 @@ namespace Grynwald.SemanticUrlParser.Test.GitHub
         }
 
         [Theory]
-        [MemberData(nameof(NegativeTestCases))]
+        [MemberData(nameof(RemoteUrlNegativeTestCases))]
+        [MemberData(nameof(CommonNegativeTestCases))]
         public void TryParseRemoteUrl_returns_false_for_invalid_input(string url)
         {
             var sut = new GitHubUrlParser();
@@ -101,7 +91,7 @@ namespace Grynwald.SemanticUrlParser.Test.GitHub
         }
 
         [Theory]
-        [MemberData(nameof(PositiveTestCases))]
+        [MemberData(nameof(RemoteUrlPositiveTestCases))]
         public void TryParseRemoteUrl_returns_the_expected_GitHubProjectInfo(string url, string host, string owner, string repository)
         {
             // ARRANGE

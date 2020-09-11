@@ -1,7 +1,5 @@
-﻿using System;
-using System.Diagnostics;
+﻿using System.Collections.Generic;
 using Grynwald.SemanticUrlParser.GitHub;
-using Xunit;
 
 namespace Grynwald.SemanticUrlParser.Test.GitHub
 {
@@ -10,5 +8,24 @@ namespace Grynwald.SemanticUrlParser.Test.GitHub
     /// </summary>
     public partial class GitHubUrlParserTest
     {
+        public static IEnumerable<object?[]> CommonNegativeTestCases()
+        {
+            static object?[] TestCase(string? url)
+            {
+                return new object?[] { url };
+            }
+
+            // null or whitespace
+            yield return TestCase(null);
+            yield return TestCase("");
+            yield return TestCase("\t");
+            yield return TestCase("  ");
+
+            // invalid URIs
+            yield return TestCase("not-a-url");
+
+            // unsupported scheme
+            yield return TestCase("ftp://github.com/owner/repo.git");
+        }
     }
 }
