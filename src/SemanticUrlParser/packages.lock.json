@@ -43,7 +43,7 @@
         "contentHash": "G8DuQY8/DK5NN+3jm5wcMcd9QYD90UV7MiLmdljSJixi3U/vNaeBKmmXUqI4DJCOeWizIUEh4ALhSt58mR+5eg=="
       }
     },
-    ".NETStandard,Version=v2.1": {
+    ".NETCoreApp,Version=v5.0": {
       "Microsoft.SourceLink.GitHub": {
         "type": "Direct",
         "requested": "[1.0.0, )",

@@ -37,7 +37,7 @@ namespace Grynwald.SemanticUrlParser.GitHub
 
 
         /// <inheritdoc />
-        public override bool Equals(object obj) => Equals(obj as GitHubCommitInfo);
+        public override bool Equals(object? obj) => Equals(obj as GitHubCommitInfo);
 
         /// <inheritdoc />
         public override int GetHashCode()
