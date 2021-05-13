@@ -10,8 +10,8 @@ namespace Grynwald.SemanticUrlParser.Test
         [Fact]
         public void Public_classes_are_sealed()
         {
-            var result = Types.InAssembly(typeof(GitHubUrlParser).Assembly)
-                .That().AreClasses().And().ArePublic()
+            var result = Types.InAssembly(typeof(GitHubUrlParser<>).Assembly)
+                .That().AreClasses().And().ArePublic().And().AreNotAbstract()
                 .Should().BeSealed()
                 .GetResult();
 

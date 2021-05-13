@@ -3,6 +3,7 @@ using System.Diagnostics.CodeAnalysis;
 
 namespace Grynwald.SemanticUrlParser.GitHub
 {
+    //TODO: Rename to GitHubRepositoryInfo??
     /// <summary>
     /// Encapsulates information about a GitHub project
     /// </summary>
