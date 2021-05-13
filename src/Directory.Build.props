@@ -11,9 +11,9 @@
 		<VSTestResultsDirectory>$(BaseOutputPath)TestResults/</VSTestResultsDirectory>
 	</PropertyGroup>
 
-	<!-- Nerdbank.GitVersioning -->	
+	<!-- Nerdbank.GitVersioning -->
 	<ItemGroup>
-		<PackageReference Include="Nerdbank.GitVersioning" Version="3.2.31" PrivateAssets="all" />
+		<PackageReference Include="Nerdbank.GitVersioning" Version="3.4.194" PrivateAssets="all" />
 	</ItemGroup>
 
 	<!-- Compiler settings-->
@@ -31,7 +31,7 @@
 
 	<!-- SourceLink  (https://github.com/dotnet/sourcelink) -->
 	<PropertyGroup>
-		<PublishRepositoryUrl>true</PublishRepositoryUrl>    
+		<PublishRepositoryUrl>true</PublishRepositoryUrl>
 		<AllowedOutputExtensionsInPackageBuildOutputFolder>$(AllowedOutputExtensionsInPackageBuildOutputFolder);.pdb</AllowedOutputExtensionsInPackageBuildOutputFolder>
 		<EmbedUntrackedSources>true</EmbedUntrackedSources>
 	</PropertyGroup>
