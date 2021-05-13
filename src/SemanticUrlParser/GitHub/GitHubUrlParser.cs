@@ -70,7 +70,6 @@ namespace Grynwald.SemanticUrlParser.GitHub
             return TryParsePath(uri, path, out result, out errorMessage);
         }
 
-
         protected virtual bool TryCreateUri(string url, [NotNullWhen(true)] out Uri? result) => Uri.TryCreate(url, UriKind.Absolute, out result);
 
         protected abstract bool TryParsePath(Uri uri, string path, [NotNullWhen(true)] out T? result, [NotNullWhen(false)] out string? errorMessage);

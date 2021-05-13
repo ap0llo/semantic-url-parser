@@ -4,27 +4,27 @@ using System.Diagnostics.CodeAnalysis;
 namespace Grynwald.SemanticUrlParser.GitHub
 {
     /// <summary>
-    /// Encapsulates information about a GitHub issue.
+    /// Encapsulates information about a GitHub Pull Request.
     /// </summary>
-    public sealed class GitHubIssueInfo : IEquatable<GitHubIssueInfo>
+    public sealed class GitHubPullRequestInfo : IEquatable<GitHubPullRequestInfo>
     {
         /// <summary>
-        /// Gets the GitHub project the issue belongs to.
+        /// Gets the GitHub project the pull request belongs to.
         /// </summary>
         public GitHubProjectInfo Project { get; }
 
         /// <summary>
-        /// Gets the issue's number
+        /// Gets the PR's number
         /// </summary>
         public int Number { get; }
 
 
         /// <summary>
-        /// Initializes a new instance of <see cref="GitHubIssueInfo"/>
+        /// Initializes a new instance of <see cref="GitHubPullRequestInfo"/>
         /// </summary>
-        /// <param name="project">The GitHub project the issue belongs to.</param>
-        /// <param name="number">The issue's number.</param>
-        public GitHubIssueInfo(GitHubProjectInfo project, int number)
+        /// <param name="project">The GitHub project the pull request belongs to.</param>
+        /// <param name="number">The PR's number.</param>
+        public GitHubPullRequestInfo(GitHubProjectInfo project, int number)
         {
             if (number <= 0)
                 throw new ArgumentOutOfRangeException(nameof(number));
@@ -35,7 +35,7 @@ namespace Grynwald.SemanticUrlParser.GitHub
 
 
         /// <inheritdoc />
-        public override bool Equals(object obj) => Equals(obj as GitHubIssueInfo);
+        public override bool Equals(object obj) => Equals(obj as GitHubPullRequestInfo);
 
         /// <inheritdoc />
         public override int GetHashCode()
@@ -49,7 +49,7 @@ namespace Grynwald.SemanticUrlParser.GitHub
         }
 
         /// <inheritdoc />
-        public bool Equals([AllowNull] GitHubIssueInfo other) =>
+        public bool Equals([AllowNull] GitHubPullRequestInfo other) =>
             other != null &&
             Project.Equals(other.Project) &&
             Number == other.Number;

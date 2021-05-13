@@ -12,7 +12,7 @@ namespace Grynwald.SemanticUrlParser.GitHub
     /// </remarks>
     /// <example>
     /// <code language="csharp">
-    /// var parser = new GitHubRemoteUrlParser();
+    /// var parser = new GitHubIssueUrlParser();
     /// var issueInfo = parser.ParseUrl("https://github.com/user/my-repo/issues/42");
     ///
     /// Console.WriteLine(issueInfo.Project.Owner);       // Prints 'user'
@@ -34,7 +34,7 @@ namespace Grynwald.SemanticUrlParser.GitHub
             var pathSegments = path.Split('/');
             if (pathSegments.Length != 4)
             {
-                errorMessage = $"'{uri}' is nut a GitHub issue url";
+                errorMessage = $"'{uri}' is not a GitHub issue url";
                 return false;
             }
 
