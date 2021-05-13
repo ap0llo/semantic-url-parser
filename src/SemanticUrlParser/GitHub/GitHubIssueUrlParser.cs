@@ -20,50 +20,13 @@ namespace Grynwald.SemanticUrlParser.GitHub
     /// Console.WriteLine(issueInfo.Number);              // Prints '42'
     /// </code>
     /// </example>
-    public sealed class GitHubIssueUrlParser : GitHubUrlParser<GitHubIssueInfo>
+    public sealed class GitHubIssueUrlParser : GitHubWebUrlParser<GitHubIssueInfo, int>
     {
-        protected override IEnumerable<string> SupportedSchemes { get; } = new[] { "http", "https" };
+        protected override string ExpectedLinkType => "issues";
 
+        protected override GitHubIssueInfo CreateResult(GitHubProjectInfo project, int id) => new GitHubIssueInfo(project, id);
 
-        protected override bool TryParsePath(Uri uri, string path, [NotNullWhen(true)] out GitHubIssueInfo? result, [NotNullWhen(false)] out string? errorMessage)
-        {
-            // expected path: '<owner>/<repo>/issues/<number>'
-
-            result = default;
-
-            var pathSegments = path.Split('/');
-            if (pathSegments.Length != 4)
-            {
-                errorMessage = $"'{uri}' is not a GitHub issue url";
-                return false;
-            }
-
-            var (owner, repo, linkType, numberString) = pathSegments;
-
-            if (!TryCreateProjectInfo(uri.Host, owner, repo, out var projectInfo, out errorMessage))
-            {
-                return false;
-            }
-
-            if (!StringComparer.OrdinalIgnoreCase.Equals("issues", linkType))
-            {
-                errorMessage = $"Expected link type to be 'issue' but found '{linkType}'";
-                return false;
-            }
-
-            if (!TryParseIssueNumber(numberString, out var issueNumber, out errorMessage))
-            {
-                return false;
-            }
-
-
-            errorMessage = null;
-            result = new GitHubIssueInfo(projectInfo, issueNumber);
-            return true;
-        }
-
-
-        private bool TryParseIssueNumber(string input, out int issueNumber, [NotNullWhen(false)] out string? errorMessage)
+        protected override bool TryParseId(string input, out int issueNumber, [NotNullWhen(false)] out string? errorMessage)
         {
             if (!Int32.TryParse(input, out issueNumber))
             {

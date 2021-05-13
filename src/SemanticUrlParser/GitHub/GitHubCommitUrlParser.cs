@@ -21,44 +21,23 @@ namespace Grynwald.SemanticUrlParser.GitHub
     /// Console.WriteLine(commitInfo.CommitId);            // Prints 'abc123'
     /// </code>
     /// </example>
-    public sealed class GitHubCommitUrlParser : GitHubUrlParser<GitHubCommitInfo>
+    public sealed class GitHubCommitUrlParser : GitHubWebUrlParser<GitHubCommitInfo, string>
     {
-        protected override IEnumerable<string> SupportedSchemes { get; } = new[] { "http", "https" };
+        protected override string ExpectedLinkType => "commit";
 
-        protected override bool TryParsePath(Uri uri, string path, [NotNullWhen(true)] out GitHubCommitInfo? result, [NotNullWhen(false)] out string? errorMessage)
+        protected override GitHubCommitInfo CreateResult(GitHubProjectInfo project, string commitId) => new GitHubCommitInfo(project, commitId);
+
+        protected override bool TryParseId(string input, out string parsed, [NotNullWhen(false)] out string? errorMessage)
         {
-            // expected path: '<owner>/<repo>/commit/<commitid>'
-
-            result = default;
-
-            var pathSegments = path.Split('/');
-            if (pathSegments.Length != 4)
-            {
-                errorMessage = $"'{uri}' is not a GitHub commit url";
-                return false;
-            }
-
-            var (owner, repo, linkType, commitId) = pathSegments;
-
-            if (!TryCreateProjectInfo(uri.Host, owner, repo, out var projectInfo, out errorMessage))
-            {
-                return false;
-            }
-
-            if (!StringComparer.OrdinalIgnoreCase.Equals("commit", linkType))
-            {
-                errorMessage = $"Expected link type to be 'commit' but found '{linkType}'";
-                return false;
-            }
-
-            if (String.IsNullOrWhiteSpace(commitId))
+            if (String.IsNullOrWhiteSpace(input))
             {
                 errorMessage = "Commit id must not be null or whitespace";
+                parsed = null!;
                 return false;
             }
 
             errorMessage = null;
-            result = new GitHubCommitInfo(projectInfo, commitId);
+            parsed = input;
             return true;
         }
     }
