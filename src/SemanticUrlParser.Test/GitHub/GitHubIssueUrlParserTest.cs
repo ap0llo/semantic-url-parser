@@ -8,7 +8,7 @@ namespace Grynwald.SemanticUrlParser.Test.GitHub
     /// <summary>
     /// Tests for <see cref="GitHubIssueUrlParser"/>
     /// </summary>
-    public sealed class GitHubIssueUrlParserTest : GitHubUrlParserTest<GitHubIssueInfo>
+    public sealed class GitHubIssueUrlParserTest : UrlParserTest<GitHubIssueInfo>
     {
         protected override GitHubUrlParser<GitHubIssueInfo> CreateInstance() => new GitHubIssueUrlParser();
 

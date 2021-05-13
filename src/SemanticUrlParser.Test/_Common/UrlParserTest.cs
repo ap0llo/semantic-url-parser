@@ -3,12 +3,12 @@ using System.Collections.Generic;
 using Grynwald.SemanticUrlParser.GitHub;
 using Xunit;
 
-namespace Grynwald.SemanticUrlParser.Test.GitHub
+namespace Grynwald.SemanticUrlParser.Test
 {
     /// <summary>
-    /// Base test class for tests of implementations of <see cref="GitHubUrlParser"/>
+    /// Base test class for tests of implementations of <see cref="UrlParser"/>
     /// </summary>
-    public abstract class GitHubUrlParserTest<T> where T : class
+    public abstract class UrlParserTest<T> where T : class
     {
         public static IEnumerable<object?[]> InvalidUriTestCases()
         {
@@ -45,6 +45,6 @@ namespace Grynwald.SemanticUrlParser.Test.GitHub
             Assert.Null(uri);
         }
 
-        protected abstract GitHubUrlParser<T> CreateInstance();
+        protected abstract UrlParser<T> CreateInstance();
     }
 }

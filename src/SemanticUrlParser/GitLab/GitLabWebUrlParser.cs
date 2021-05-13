@@ -1,15 +1,16 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
+using System.Linq;
 
-namespace Grynwald.SemanticUrlParser.GitHub
+namespace Grynwald.SemanticUrlParser.GitLab
 {
     /// <summary>
-    /// Base class for all parsers of GitHub web urls
+    /// Base class for all parsers of GitLab web urls
     /// </summary>
     /// <typeparam name="TResult">The type of the result returned by the parser</typeparam>
     /// <typeparam name="TId">The type of the parsed item id, e.g. <c>int</c> for pull request ids.</typeparam>
-    public abstract class GitHubWebUrlParser<TResult, TId> : GitHubUrlParser<TResult> where TResult : class
+    public abstract class GitLabWebUrlParser<TResult, TId> : GitLabUrlParser<TResult> where TResult : class
     {
         protected override IEnumerable<string> SupportedSchemes { get; } = new[] { "http", "https" };
 
@@ -17,8 +18,8 @@ namespace Grynwald.SemanticUrlParser.GitHub
         /// Gets the expected link type for the current parser.
         /// </summary>
         /// <remarks>
-        /// GitHub web urls all folow the format <c><![CDATA[<scheme>://<host>/<owner>/<repo>/<linktype>/<id>]]></c>,
-        /// e.g. <c><![CDATA[https://github.com/owner/repo/issues/1]]></c>.
+        /// GitLab web urls all folow the format <c><![CDATA[<scheme>://<host>/<namespace>/<project>/-/<linktype>/<id>]]></c>,
+        /// e.g. <c><![CDATA[https://gitlab.com/group/subgroup/myproject/-/issues/1]]></c>.
         /// The <see cref="ExpectedLinkType"/> must return the expected link type for the current parser.
         /// </remarks>
         protected abstract string ExpectedLinkType { get; }
@@ -26,23 +27,43 @@ namespace Grynwald.SemanticUrlParser.GitHub
 
         protected override bool TryParsePath(Uri uri, string path, [NotNullWhen(true)] out TResult? result, [NotNullWhen(false)] out string? errorMessage)
         {
-            // expected path: '<owner>/<repo>/<linktype>/<id>'
+            // expected path: '<namespace>/<project>/-/<linktype>/<id>'
 
             result = default;
 
             var pathSegments = path.Split('/');
-            if (pathSegments.Length != 4)
+            if (pathSegments.Length < 5)
             {
-                errorMessage = $"'{uri}' is not a GitHub web url";
+                errorMessage = $"'{uri}' is not a GitLab web url";
                 return false;
             }
 
-            var (owner, repo, linkType, idString) = pathSegments;
+            var dashIndex = Array.IndexOf(pathSegments, "-");
 
-            if (!TryCreateProjectInfo(uri.Host, owner, repo, out var projectInfo, out errorMessage))
+            // there must be at least a user or group name and a project name before the '-'
+            if (dashIndex < 2)
+            {
+                errorMessage = $"'{uri}' is not a GitLab web url";
+                return false;
+            }
+
+            // there must be at least the link type and the id after the '-'
+            if (dashIndex != pathSegments.Length - 3)
+            {
+                errorMessage = $"'{uri}' is not a GitLab web url";
+                return false;
+            }
+
+            var @namespace = String.Join("/", pathSegments.Take(dashIndex - 1));
+            var projectName = pathSegments[dashIndex - 1];
+
+            if (!TryCreateProjectInfo(uri.Host, @namespace, projectName, out var projectInfo, out errorMessage))
             {
                 return false;
             }
+
+            var linkType = pathSegments[dashIndex + 1];
+            var idString = pathSegments[dashIndex + 2];
 
             if (!StringComparer.OrdinalIgnoreCase.Equals(ExpectedLinkType, linkType))
             {
@@ -63,7 +84,7 @@ namespace Grynwald.SemanticUrlParser.GitHub
 
         protected abstract bool TryParseId(string input, out TId parsed, [NotNullWhen(false)] out string? errorMessage);
 
-        protected abstract TResult CreateResult(GitHubProjectInfo project, TId id);
+        protected abstract TResult CreateResult(GitLabProjectInfo project, TId id);
 
     }
 }

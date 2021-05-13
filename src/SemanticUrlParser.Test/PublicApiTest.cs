@@ -15,7 +15,7 @@ namespace Grynwald.SemanticUrlParser.Test
                 .Should().BeSealed()
                 .GetResult();
 
-            Assert.True(result.IsSuccessful, $"Types  {String.Join(", ", result.FailingTypeNames ?? Array.Empty<string>())} should be public.");
+            Assert.True(result.IsSuccessful, $"Types  {String.Join(", ", result.FailingTypeNames ?? Array.Empty<string>())} should be sealed.");
         }
     }
 }

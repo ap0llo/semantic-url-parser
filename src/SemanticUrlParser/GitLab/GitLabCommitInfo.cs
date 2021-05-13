@@ -1,17 +1,13 @@
 ﻿using System;
-using System.Diagnostics.CodeAnalysis;
 
-namespace Grynwald.SemanticUrlParser.GitHub
+namespace Grynwald.SemanticUrlParser.GitLab
 {
-    /// <summary>
-    /// Encapsulates information about a git commit on GitHub
-    /// </summary>
-    public sealed class GitHubCommitInfo : IEquatable<GitHubCommitInfo>
+    public sealed class GitLabCommitInfo : IEquatable<GitLabCommitInfo>
     {
         /// <summary>
-        /// Gets the GitHub project the commit belongs to.
+        /// Gets the GitLab project the commitbelongs to.
         /// </summary>
-        public GitHubProjectInfo Project { get; }
+        public GitLabProjectInfo Project { get; }
 
         /// <summary>
         /// Gets the git commit SHA
@@ -20,11 +16,11 @@ namespace Grynwald.SemanticUrlParser.GitHub
 
 
         /// <summary>
-        /// Initializes a new instance of <see cref="GitHubCommitInfo"/>
+        /// Initializes a new instance of <see cref="GitLabCommitInfo"/>
         /// </summary>
-        /// <param name="project">The GitHub project the commit belongs to.</param>
+        /// <param name="project">The GitLab project the pull request belongs to.</param>
         /// <param name="number">The commit's SHA</param>
-        public GitHubCommitInfo(GitHubProjectInfo project, string commitId)
+        public GitLabCommitInfo(GitLabProjectInfo project, string commitId)
         {
             if (String.IsNullOrWhiteSpace(commitId))
                 throw new ArgumentException("Value must not be null or whitespace", nameof(commitId));
@@ -35,7 +31,7 @@ namespace Grynwald.SemanticUrlParser.GitHub
 
 
         /// <inheritdoc />
-        public override bool Equals(object? obj) => Equals(obj as GitHubCommitInfo);
+        public override bool Equals(object? obj) => Equals(obj as GitLabCommitInfo);
 
         /// <inheritdoc />
         public override int GetHashCode()
@@ -49,9 +45,10 @@ namespace Grynwald.SemanticUrlParser.GitHub
         }
 
         /// <inheritdoc />
-        public bool Equals([AllowNull] GitHubCommitInfo other) =>
+        public bool Equals(GitLabCommitInfo? other) =>
             other != null &&
             Project.Equals(other.Project) &&
             StringComparer.OrdinalIgnoreCase.Equals(CommitId, other.CommitId);
     }
+
 }
