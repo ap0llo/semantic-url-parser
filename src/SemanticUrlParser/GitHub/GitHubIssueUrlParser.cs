@@ -36,7 +36,7 @@ namespace Grynwald.SemanticUrlParser.GitHub
 
             if (issueNumber <= 0)
             {
-                errorMessage = $"Issue number must bot be 0 or negative but was '{issueNumber}'";
+                errorMessage = $"Issue number must not be 0 or negative but was '{issueNumber}'";
                 return false;
             }
 

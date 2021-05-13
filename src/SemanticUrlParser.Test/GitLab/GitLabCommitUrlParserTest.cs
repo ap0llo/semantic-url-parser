@@ -49,7 +49,7 @@ namespace Grynwald.SemanticUrlParser.Test.GitLab
             yield return TestCase("https://gitlab.com/namespace//-/commit/abc123");
             yield return TestCase("https://gitlab.com/namespace/ /-/commit/abc123");
 
-            // empty or whitespace commit if
+            // empty or whitespace commit id
             yield return TestCase("https://gitlab.com/namespace/project/-/commit/ /");
         }
 

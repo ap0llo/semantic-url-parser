@@ -36,7 +36,7 @@ namespace Grynwald.SemanticUrlParser.GitHub
 
             if (prNumber <= 0)
             {
-                errorMessage = $"Pull Request number must bot be 0 or negative but was '{prNumber}'";
+                errorMessage = $"Pull Request number must not be 0 or negative but was '{prNumber}'";
                 return false;
             }
 
