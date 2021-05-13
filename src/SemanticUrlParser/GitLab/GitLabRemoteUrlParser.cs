@@ -4,7 +4,23 @@ using Grynwald.SemanticUrlParser.Utilities;
 
 namespace Grynwald.SemanticUrlParser.GitLab
 {
-    public sealed partial class GitLabUrlParser
+    /// <summary>
+    /// Parses GitLab git remote URLs and returns a <see cref="GitLabProjectInfo"/>.
+    /// </summary>
+    /// <remarks>
+    /// Supports both HTTP and SSH git urls.
+    /// </remarks>
+    /// <example>
+    /// Get the name of a GitLab project from a SSH url.
+    /// <code language="csharp">
+    /// var parser = new GitLabRemoteUrlParser();
+    /// var projectInfo = parser.ParseUrl("git@gitlab.com:user/my-repo.git");
+    ///
+    /// Console.WriteLine(projectInfo.Owner);       // Prints 'user'
+    /// Console.WriteLine(projectInfo.Repository);  // Prints 'my-repo'
+    /// </code>
+    /// </example>
+    public sealed class GitLabRemoteUrlParser : GitLabUrlParser<GitLabProjectInfo>
     {
         /// <summary>
         /// Parses the specified git remote url.

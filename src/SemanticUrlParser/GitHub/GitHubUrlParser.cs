@@ -10,7 +10,6 @@ namespace Grynwald.SemanticUrlParser.GitHub
     /// <typeparam name="T">The model type parsed from the url</typeparam>
     public abstract class GitHubUrlParser<T> where T : class
     {
-
         protected abstract IEnumerable<string> SupportedSchemes { get; }
 
 

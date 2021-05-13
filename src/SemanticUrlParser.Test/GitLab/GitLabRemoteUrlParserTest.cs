@@ -5,7 +5,10 @@ using Xunit;
 
 namespace Grynwald.SemanticUrlParser.Test.GitLab
 {
-    public partial class GitLabUrlParserTest
+    /// <summary>
+    /// Tests for <see cref="GitLabRemoteUrlParser"/>
+    /// </summary>
+    public class GitLabRemoteUrlParserTest
     {
         public static IEnumerable<object?[]> NegativeTestCases()
         {
@@ -78,7 +81,7 @@ namespace Grynwald.SemanticUrlParser.Test.GitLab
         [MemberData(nameof(NegativeTestCases))]
         public void ParseRemoteUrl_throws_ArgumentException_for_invalid_input(string url)
         {
-            var sut = new GitLabUrlParser();
+            var sut = new GitLabRemoteUrlParser();
             Assert.ThrowsAny<ArgumentException>(() => sut.ParseRemoteUrl(url));
         }
 
@@ -87,7 +90,7 @@ namespace Grynwald.SemanticUrlParser.Test.GitLab
         public void ParseRemoteUrl_returns_the_expected_GitLabProjectInfo(string url, string host, string @namespace, string projectName)
         {
             // ARRANGE
-            var sut = new GitLabUrlParser();
+            var sut = new GitLabRemoteUrlParser();
             var expected = new GitLabProjectInfo(host, @namespace, projectName);
 
             // ACT
@@ -101,7 +104,7 @@ namespace Grynwald.SemanticUrlParser.Test.GitLab
         [MemberData(nameof(NegativeTestCases))]
         public void TryParseRemoteUrl_returns_false_for_invalid_input(string url)
         {
-            var sut = new GitLabUrlParser();
+            var sut = new GitLabRemoteUrlParser();
             Assert.False(sut.TryParseRemoteUrl(url, out var uri));
             Assert.Null(uri);
         }
@@ -112,7 +115,7 @@ namespace Grynwald.SemanticUrlParser.Test.GitLab
         {
             // ARRANGE
             var expected = new GitLabProjectInfo(host, @namespace, projectName);
-            var sut = new GitLabUrlParser();
+            var sut = new GitLabRemoteUrlParser();
 
             // ACT 
             var success = sut.TryParseRemoteUrl(url, out var projectInfo);

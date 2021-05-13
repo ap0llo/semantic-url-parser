@@ -1,9 +1,9 @@
 ﻿namespace Grynwald.SemanticUrlParser.GitLab
 {
     /// <summary>
-    /// Parser for GitHub urls.
+    /// Base class for GitLab url parsers
     /// </summary>
-    public sealed partial class GitLabUrlParser
+    public abstract class GitLabUrlParser<T> where T : class
     {
     }
 }
